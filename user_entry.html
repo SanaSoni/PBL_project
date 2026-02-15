@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HealthChef AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #fef9f3 100%);
+      color: #2d3748;
+      min-height: 100vh;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .auth-container {
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .logo-section {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo-circle {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #06a77d 0%, #04c997 100%);
+      border-radius: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(-5deg);
+      box-shadow: 0 8px 24px rgba(6, 167, 125, 0.3);
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .brand-name {
+      font-family: 'Caveat', cursive;
+      font-size: 3rem;
+      font-weight: 700;
+      color: #1a202c;
+    }
+
+    .brand-tagline {
+      font-size: 1.125rem;
+      color: #718096;
+    }
+
+    .auth-card {
+      background: white;
+      border-radius: 32px;
+      padding: 3rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+
+    .form-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      background: #f7fafc;
+      padding: 0.5rem;
+      border-radius: 16px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 0.875rem;
+      border: none;
+      background: transparent;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #718096;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #06a77d 0%, #04c997 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(6, 167, 125, 0.25);
+    }
+
+    .form-content {
+      display: none;
+    }
+
+    .form-content.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.3s ease;
+      background: #f7fafc;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #06a77d;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(6, 167, 125, 0.1);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, #06a77d 0%, #04c997 100%);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(6, 167, 125, 0.3);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(6, 167, 125, 0.4);
+    }
+
+    .conditions-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .conditions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .condition-checkbox {
+      position: relative;
+    }
+
+    .condition-checkbox input {
+      position: absolute;
+      opacity: 0;
+    }
+
+    .condition-label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #f7fafc;
+    }
+
+    .condition-checkbox input:checked + .condition-label {
+      border-color: #06a77d;
+      background: linear-gradient(135deg, #f0fdf7 0%, #dcfce7 100%);
+    }
+
+    .condition-icon {
+      font-size: 1.5rem;
+    }
+
+    .condition-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #2d3748;
+    }
+
+    .message {
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+      display: none;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .error {
+      background: #fee2e2;
+      border: 2px solid #ef4444;
+      color: #991b1b;
+    }
+
+    .success {
+      background: #dcfce7;
+      border: 2px solid #06a77d;
+      color: #166534;
+    }
+
+    /* Main App */
+    .main-header {
+      background: white;
+      border-bottom: 2px solid #f7f7f7;
+      padding: 1.5rem 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-small {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-circle-small {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, #06a77d 0%, #04c997 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(-5deg);
+      font-size: 1.8rem;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: none;
+      background: #f7fafc;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      background: #edf2f7;
+      transform: translateY(-2px);
+    }
+
+    .content-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .welcome-banner {
+      background: linear-gradient(135deg, #06a77d 0%, #04c997 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 20px;
+      margin-bottom: 2rem;
+    }
+
+    .welcome-banner h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-subtitle {
+      font-size: 0.95rem;
+      color: #718096;
+      margin-bottom: 1.5rem;
+    }
+
+    .condition-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+    }
+
+    .condition-card {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 1.25rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      position: relative;
+    }
+
+    .condition-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--color);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .condition-card.active::before {
+      transform: scaleX(1);
+    }
+
+    .condition-card.active {
+      border-color: var(--color);
+      background: linear-gradient(135deg, white 0%, rgba(255,255,255,0.5) 100%);
+    }
+
+    .condition-emoji {
+      font-size: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- AUTH PAGE -->
+  <div id="authPage" class="page active">
+    <div class="auth-page">
+      <div class="auth-container">
+        <div class="logo-section">
+          <div class="logo-circle">👨‍🍳</div>
+          <h1 class="brand-name">HealthChef</h1>
+          <p class="brand-tagline">Your kitchen companion</p>
+        </div>
+
+        <div class="auth-card">
+          <div id="message" class="message"></div>
+
+          <div class="form-tabs">
+            <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+            <button class="tab-btn" onclick="switchTab('register')">Register</button>
+          </div>
+
+          <!-- Login -->
+          <div class="form-content active" id="loginForm">
+            <form onsubmit="return login(event)">
+              <div class="form-group">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-input" id="loginName" placeholder="Your name" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-input" id="loginPassword" placeholder="Your password" required>
+              </div>
+              <button type="submit" class="submit-btn">Login</button>
+            </form>
+          </div>
+
+          <!-- Register -->
+          <div class="form-content" id="registerForm">
+            <form onsubmit="return register(event)">
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-input" id="registerName" placeholder="John Doe" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-input" id="registerPassword" placeholder="Min 6 characters" required minlength="6">
+              </div>
+
+              <div class="conditions-section">
+                <label class="form-label">Health Conditions (Optional)</label>
+                <div class="conditions-grid">
+                  <div class="condition-checkbox">
+                    <input type="checkbox" id="diabetes" value="diabetes">
+                    <label for="diabetes" class="condition-label">
+                      <span class="condition-icon">💉</span>
+                      <span class="condition-name">Diabetes</span>
+                    </label>
+                  </div>
+                  <div class="condition-checkbox">
+                    <input type="checkbox" id="hypertension" value="hypertension">
+                    <label for="hypertension" class="condition-label">
+                      <span class="condition-icon">❤️</span>
+                      <span class="condition-name">High BP</span>
+                    </label>
+                  </div>
+                  <div class="condition-checkbox">
+                    <input type="checkbox" id="celiac" value="celiac">
+                    <label for="celiac" class="condition-label">
+                      <span class="condition-icon">🚫</span>
+                      <span class="condition-name">Celiac</span>
+                    </label>
+                  </div>
+                  <div class="condition-checkbox">
+                    <input type="checkbox" id="kidney" value="kidney">
+                    <label for="kidney" class="condition-label">
+                      <span class="condition-icon">🫧</span>
+                      <span class="condition-name">Kidney</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" class="submit-btn">Create Account</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      document.querySelectorAll('.form-content').forEach(form => form.classList.remove('active'));
+      document.getElementById(tab + 'Form').classList.add('active');
+      hideMessage();
+    }
+
+    function showMessage(text, type) {
+      const msg = document.getElementById('message');
+      msg.textContent = text;
+      msg.className = 'message show ' + type;
+      setTimeout(() => msg.classList.remove('show'), 4000);
+    }
+
+    function hideMessage() {
+      document.getElementById('message').classList.remove('show');
+    }
+
+    function register(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('registerName').value.trim();
+      const password = document.getElementById('registerPassword').value;
+      
+      const conditions = [];
+      ['diabetes', 'hypertension', 'celiac', 'kidney'].forEach(id => {
+        if (document.getElementById(id).checked) {
+          conditions.push(id);
+        }
+      });
+
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      
+      if (users.find(u => u.name.toLowerCase() === name.toLowerCase())) {
+        showMessage('This name is already taken!', 'error');
+        return false;
+      }
+
+      const user = {
+        id: Date.now(),
+        name: name,
+        password: password,
+        conditions: conditions
+      };
+
+      users.push(user);
+      localStorage.setItem('users', JSON.stringify(users));
+      localStorage.setItem('currentUser', JSON.stringify(user));
+
+      showMessage('✅ Account created!', 'success');
+      setTimeout(() => showApp(user), 1000);
+      return false;
+    }
+
+    function login(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('loginName').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find(u => u.name.toLowerCase() === name.toLowerCase() && u.password === password);
+
+      if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        showMessage('✅ Login successful!', 'success');
+        setTimeout(() => showApp(user), 1000);
+      } else {
+        showMessage('❌ Invalid name or password', 'error');
+      }
+      return false;
+    }
+
+    function showApp(user) {
+      // Save user and redirect to main app
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      window.location.href = 'healthchef-app.html';
+    }
+
+    function logout() {
+      if (confirm('Logout?')) {
+        localStorage.removeItem('currentUser');
+        location.reload();
+      }
+    }
+  </script>
+</body>
+</html>
